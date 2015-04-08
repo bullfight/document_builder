@@ -1,5 +1,7 @@
 # DocumentBuilder
 
+[![Build Status](https://travis-ci.org/bullfight/document_builder.svg?branch=master)](https://travis-ci.org/bullfight/document_builder)
+
 This is a small set of modules for building up xpath based document attributes
 from a nokogir document object.
 

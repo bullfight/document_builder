@@ -7,10 +7,10 @@ Gem::Specification.new do |spec|
   spec.name          = "document_builder"
   spec.version       = DocumentBuilder::VERSION
   spec.authors       = ["Patrick Schmitz"]
-  spec.email         = ["pat@reccenter.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = ""
+  spec.email         = ["p.schmitz@gmail.com"]
+  spec.summary       = %q{A document builder for nokogiri documents.}
+  spec.description   = %q{This is a small set of modules for building up xpath based document attributes from a nokogir document object.}
+  spec.homepage      = "https://github.com/bullfight/document_builder"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
