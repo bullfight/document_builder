@@ -74,6 +74,7 @@ module Document
 end
 
 ### Using Model Objects
+```
 
 ```ruby
 # Read an xml file
@@ -117,7 +118,6 @@ post = Document::Post.call(document)
 }
 post.title
 => "Welcome To Wrxer News."
-
 ```
 
 ## Contributing
