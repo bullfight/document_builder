@@ -3,7 +3,9 @@ rvm:
 - 2.2.0
 deploy:
   provider: rubygems
+  api_key:
+    secure: KLDtpoSEkumzNlaVuzyQUcrFdgMQcLSuGvG5F3yZptijDfFQ4dnQG3MkpdgPuJdxu7J5FZssaFaNDPfb9sgP5pYRcayW4iX3VzKJ5kfsSMYkoU/Yj8PENUGRyK0PjZjJIIeWOPwWg0ZgSBzW9f55Frvv3RBevLHH2c5flHAM0u0=
+  gem: document_builder
   on:
     tags: true
-  api_key:
-    secure: HVIv1E7b3qrAKtX6wJBU7KXBKWvKZt3lcBt/rxbOA1CLjPfT3cXwgaBViD0h+RRUnlsAvsOBJqRTzkjdoAH9BBnF0UqAHaVc2q1OO/n3MWB78nxYkqINBEIMNeyjA3exGgRoCxpl9zN62ChAeNkULe7shAlBngP2S3HLwrVgIhE=
+    repo: bullfight/document_builder
