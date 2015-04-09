@@ -1,6 +1,6 @@
 require "document_builder/version"
 
-require 'time'
+require 'active_support/time'
 require 'json'
 
 require 'document_builder/coercion'

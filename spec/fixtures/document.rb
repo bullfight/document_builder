@@ -25,12 +25,13 @@ module Document
     xpath "item"
     attribute :title
     attribute :link
-    attribute :pub_date, "pubDate", DocumentBuilder::TimeAttribute
+    attribute :pub_date, "pubDate", DocumentBuilder::UtcTimeAttribute
     attribute :creator, "dc:creator"
     attribute :content, "content:encoded"
     attribute :excerpt, "excerpt:encoded"
     attribute :id, "wp:post_id", DocumentBuilder::IntegerAttribute
-    attribute :published_at, 'wp:post_date_gmt', DocumentBuilder::TimeAttribute
+    attribute :post_date, 'wp:post_date', DocumentBuilder::TimeAttribute
+    attribute :post_date_gmt, 'wp:post_date_gmt', DocumentBuilder::UtcTimeAttribute
     attribute :comment_status, "wp:comment_status"
     attribute :ping_status, "wp:ping_status"
     attribute :name, 'wp:post_name'

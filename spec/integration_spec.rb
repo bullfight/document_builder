@@ -28,8 +28,19 @@ describe Document::Post do
       expect(subject.name).to eq "welcome-to-wrxer-news"
     end
 
-    it 'has a post date' do
-      expect(subject.published_at).to eq Time.parse("2007-11-17 21:30:51")
+    it 'has a post_date' do
+      expect(subject.post_date).to eq Time.parse("2007-11-17 15:30:51")
+    end
+
+    it 'has a utc post_date_gmt' do
+      expect(subject.post_date_gmt).to eq Time.parse("2007-11-17 21:30:51 UTC")
+      expect(subject.post_date_gmt.utc?).to eq true
+    end
+
+    it 'has a utc pub_date' do
+      expect(subject.pub_date).to eq(
+        Time.parse("Sat, 17 Nov 2007 21:30:51 +0000"))
+      expect(subject.pub_date.utc?).to eq true
     end
 
     it 'has a category' do
@@ -64,7 +75,7 @@ describe Document::Post do
     end
 
     it 'returns nil for time' do
-      expect(subject.published_at).to eq nil
+      expect(subject.post_date_gmt).to eq nil
     end
   end
 

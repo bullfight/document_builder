@@ -45,6 +45,15 @@ module DocumentBuilder
     end
   end
 
+  class UtcTimeAttribute
+    include Coercion
+    def self.coerce(document)
+      Time.use_zone("UTC") do
+        Time.zone.parse(document.text)
+      end
+    end
+  end
+
   class ElementAttribute
     include Coercion
     def self.call(document, params = {})
