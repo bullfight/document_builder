@@ -2,7 +2,7 @@ module DocumentBuilder
   module Collection
     module ClassMethods
       def call(document, params = {})
-        root = @xpath || params[:xpath]
+        root = @root || params[:root]
         unless document.name == root
           document = document.xpath(root)
         end
@@ -10,8 +10,8 @@ module DocumentBuilder
         document.nil? ? nil : self.coerce(document)
       end
 
-      def collection(value, xpath, parser)
-        @collection = Attribute.new(value, xpath, parser)
+      def collection(value, root, parser)
+        @collection = Attribute.new(value, root, parser)
       end
 
       def inherited(subclass)
@@ -33,7 +33,7 @@ module DocumentBuilder
     end
 
     def each(&block)
-      document.xpath(collection.xpath).each do |item|
+      document.xpath(collection.root).each do |item|
         block.call(
           collection.call(item)
         )

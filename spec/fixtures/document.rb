@@ -1,7 +1,7 @@
 module Document
   class Category
     include DocumentBuilder::Model
-    xpath 'category'
+    root 'category'
     attribute :domain, 'domain', DocumentBuilder::ElementAttribute
     attribute :nicename, 'nicename', DocumentBuilder::ElementAttribute
     attribute :body, nil, DocumentBuilder::ChildAttribute
@@ -9,20 +9,20 @@ module Document
 
   class Postmeta
     include DocumentBuilder::Model
-    xpath 'postmeta'
+    root 'postmeta'
     attribute :key, "wp:meta_key"
     attribute :value, "wp:meta_value", DocumentBuilder::IntegerAttribute
   end
 
   class PostmetaCollection
     include DocumentBuilder::Collection
-    xpath "item"
+    root "item"
     collection :postmeta, "//wp:postmeta", Postmeta
   end
 
   class Post
     include DocumentBuilder::Model
-    xpath "item"
+    root "item"
     attribute :title
     attribute :link
     attribute :pub_date, "pubDate", DocumentBuilder::UtcTimeAttribute

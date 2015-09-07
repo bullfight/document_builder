@@ -1,12 +1,12 @@
 module DocumentBuilder
   module Coercion
     module ClassMethods
-      def xpath(value)
-        @xpath = value
+      def root(value)
+        @root = value
       end
 
       def call(document, params = {})
-        root = @xpath || params[:xpath]
+        root = @root || params[:root]
         unless document.name == root
           document = document.at_xpath(root)
         end
@@ -57,7 +57,7 @@ module DocumentBuilder
   class ElementAttribute
     include Coercion
     def self.call(document, params = {})
-      element = document.attributes[params[:xpath].to_s]
+      element = document.attributes[params[:root].to_s]
       element.nil? ? nil : self.coerce(element)
     end
 

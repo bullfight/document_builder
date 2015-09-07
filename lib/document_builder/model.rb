@@ -1,9 +1,9 @@
 module DocumentBuilder
   module Model
     module ClassMethods
-      def attribute(name, xpath = nil, coercion = TextAttribute)
+      def attribute(name, root = nil, coercion = TextAttribute)
         @attributes ||= []
-        @attributes << Attribute.new(name, xpath || name.to_s, coercion)
+        @attributes << Attribute.new(name, root || name.to_s, coercion)
       end
 
       def inherited(subclass)
