@@ -11,7 +11,7 @@ module DocumentBuilder
       end
 
       def collection(value, root, parser)
-        @collection = Attribute.new(value, root, parser)
+        @collection = Property.new(value, root, parser)
       end
 
       def inherited(subclass)

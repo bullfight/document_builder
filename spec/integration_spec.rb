@@ -61,7 +61,7 @@ describe Document::Post do
     end
   end
 
-  context "nil attribute case" do
+  context "nil property case" do
     let(:filename) { fixture('missing_fields.xml') }
     let(:document) { Nokogiri::XML(filename.read).xpath('//channel').at_xpath('item')}
     subject { described_class.call(document) }

@@ -24,28 +24,28 @@ module DocumentBuilder
     end
   end
 
-  class TextAttribute
+  class TextProperty
     include Coercion
     def self.coerce(document)
       document.text
     end
   end
 
-  class IntegerAttribute
+  class IntegerProperty
     include Coercion
     def self.coerce(document)
       Integer(document.text)
     end
   end
 
-  class TimeAttribute
+  class TimeProperty
     include Coercion
     def self.coerce(document)
       Time.parse(document.text)
     end
   end
 
-  class UtcTimeAttribute
+  class UtcTimeProperty
     include Coercion
     def self.coerce(document)
       Time.use_zone("UTC") do
@@ -54,10 +54,10 @@ module DocumentBuilder
     end
   end
 
-  class ElementAttribute
+  class ElementProperty
     include Coercion
     def self.call(document, params = {})
-      element = document.attributes[params[:root].to_s]
+      element = document.properties[params[:root].to_s]
       element.nil? ? nil : self.coerce(element)
     end
 
@@ -66,7 +66,7 @@ module DocumentBuilder
     end
   end
 
-  class ChildAttribute
+  class ChildProperty
     include Coercion
     def self.call(document, params = {})
       child = document.children
