@@ -1,22 +1,20 @@
 module DocumentBuilder
   module Model
     module ClassMethods
-      def property(name, selector: nil, type: nil)
+      def add_attribute(name, attribute)
         @attributes ||= {}
-        @attributes[name.to_sym] = Property.new(name,
-          selector: selector, type: type)
+        @attributes[name.to_sym] = attribute
+      end
+      def property(name, selector: nil, type: nil)
+        add_attribute name, Property.new(name, selector: selector, type: type)
       end
 
       def tag(name, selector: nil, type: nil)
-        @attributes ||= {}
-        @attributes[name.to_sym] = Tag.new(name,
-          selector: selector, type: type)
+        add_attribute name, Tag.new(name, selector: selector, type: type)
       end
 
       def collection(name, selector: nil, type: nil)
-        @attributes ||= {}
-        @attributes[name.to_sym] = Collection.new(name,
-          selector: selector, type: type)
+        add_attribute name, Collection.new(name, selector: selector, type: type)
       end
 
       def root(selector)
