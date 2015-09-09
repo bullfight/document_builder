@@ -5,6 +5,7 @@ module DocumentBuilder
         @attributes ||= {}
         @attributes[name.to_sym] = attribute
       end
+
       def property(name, selector: nil, type: nil)
         add_attribute name, Property.new(name, selector: selector, type: type)
       end
@@ -65,6 +66,10 @@ module DocumentBuilder
       else
         attributes[name].call(document)
       end
+    end
+
+    def add_attribute(name, attribute)
+      self.class.add_attribute(name, attribute)
     end
 
     def [](key)
