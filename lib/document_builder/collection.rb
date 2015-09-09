@@ -20,5 +20,21 @@ module DocumentBuilder
         yield type.new(element)
       end
     end
+
+    def to_s(*args)
+      JSON.pretty_generate(to_hash)
+    end
+
+    def inspect
+      "#<#{self.class}:0x#{self.object_id.to_s(16)}> Attributes: " + JSON.pretty_generate(to_hash)
+    end
+
+    def to_json(*args)
+      JSON.generate(to_hash)
+    end
+
+    def to_hash
+      entries.map(&:to_hash)
+    end
   end
 end
