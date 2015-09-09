@@ -1,14 +1,36 @@
 module DocumentBuilder
   module Model
     module ClassMethods
-      def property(name, root = nil, coercion = TextProperty)
-        @properties ||= []
-        @properties << Property.new(name, root || name.to_s, coercion)
+      def property(name, selector: nil, type: nil)
+        @attributes ||= {}
+        @attributes[name.to_sym] = Property.new(name,
+          selector: selector, type: type)
+      end
+
+      def tag(name, selector: nil, type: nil)
+        @attributes ||= {}
+        @attributes[name.to_sym] = Tag.new(name,
+          selector: selector, type: type)
+      end
+
+      def collection(name, selector: nil, type: nil)
+        @attributes ||= {}
+        @attributes[name.to_sym] = Collection.new(name,
+          selector: selector, type: type)
+      end
+
+      def root(selector)
+        @root = selector
       end
 
       def inherited(subclass)
-        subclass.instance_variable_set(:@properties, @properties)
+        subclass.instance_variable_set(:@attributes, @attributes)
+        subclass.instance_variable_set(:@root, @root)
         super
+      end
+
+      def call(document)
+        self.new(document)
       end
     end
 
@@ -16,8 +38,6 @@ module DocumentBuilder
       base.extend(ClassMethods)
       base.class_eval do
         include Coercion
-
-        attr_reader :document
       end
     end
 
@@ -25,16 +45,28 @@ module DocumentBuilder
       @document = document
     end
 
-    def properties
-      self.class.instance_variable_get(:@properties)
+    def document
+      if root && @document.name != root
+        @document.at_xpath(root)
+      else
+        @document
+      end
+    end
+
+    def root
+      self.class.instance_variable_get(:@root)
+    end
+
+    def attributes
+      self.class.instance_variable_get(:@attributes)
     end
 
     def [](key)
-      properties.select { |item| item.name == key.to_sym}.first.call(document)
+      attributes[key].call(document)
     end
 
     def method_missing(name, *args)
-      properties.select { |item| item.name == name }.first.call(document)
+      attributes[name].call(document)
     rescue NoMethodError => e
       raise NoMethodError.new("undefined method '#{name}' for #{self.class}")
     end
@@ -44,7 +76,7 @@ module DocumentBuilder
     end
 
     def inspect
-      "#<#{self.class}:0x#{self.object_id.to_s(16)}> Properties: " + JSON.pretty_generate(to_hash)
+      "#<#{self.class}:0x#{self.object_id.to_s(16)}> Attributes: " + JSON.pretty_generate(to_hash)
     end
 
     def to_json(*args)
@@ -52,9 +84,9 @@ module DocumentBuilder
     end
 
     def to_hash
-      properties.inject({}) do |acc, (key, value)|
-        value = key.call(document)
-        acc[key.name] = value.respond_to?(:to_hash) ? value.to_hash : value
+      attributes.inject({}) do |acc, (key, value)|
+        obj = value.call(document)
+        acc[key] = obj.respond_to?(:to_hash) ? obj.to_hash : obj
         acc
       end
     end

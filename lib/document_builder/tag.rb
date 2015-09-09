@@ -1,5 +1,5 @@
 module DocumentBuilder
-  class Property
+  class Tag
     attr_reader :name, :selector, :type, :node
 
     def initialize(name, type: nil, selector: nil)
@@ -11,12 +11,7 @@ module DocumentBuilder
     def call(document)
       return nil if document.nil?
 
-      if selector.nil? || document.name == selector
-        @node = document
-      else
-        @node =  document.at_xpath(selector)
-      end
-
+      @node = selector.nil? ? document : document.attributes[selector]
       type.call(@node)
     end
   end
