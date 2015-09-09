@@ -29,18 +29,15 @@ following example
 ```ruby
 class ListItem
   include DocumentBuilder::Model
-  property :name, type: Text
+  property :name, type: TextProperty
 end
 
 class SomeDocument
   include DocumentBuilder::Model
   root "//root"
-  collection :collection, selector: "//collection", class: ListItem do
-    property :name, selector: "//inner-list-item"
-  end
-
-  collection :outer_collection, selector: "//outer-list-item", class: ListItem
-  property :property, selector: "//property", type: Text
+  collection :collection, selector: "//collection//inner-list-item", type: ListItem
+  collection :outer_collection, selector: "outer-list-item", type: ListItem
+  property :property, selector: "//property", type: TextProperty
 end
 ```
 
