@@ -95,7 +95,7 @@ module DocumentBuilder
     end
 
     def to_hash
-      attributes.keys.each do |key|
+      attributes.inject({}) do |acc, (key, value)|
         obj = get_attribute(key)
         acc[key] = obj.respond_to?(:to_hash) ? obj.to_hash : obj
         acc
