@@ -59,12 +59,20 @@ module DocumentBuilder
       self.class.instance_variable_get(:@attributes)
     end
 
+    def get_attribute(name)
+      if respond_to?(name)
+        public_send(name)
+      else
+        attributes[name].call(document)
+      end
+    end
+
     def [](key)
-      attributes[key].call(document)
+      get_attribute(key)
     end
 
     def method_missing(name, *args)
-      attributes[name].call(document)
+      get_attribute(name)
     rescue NoMethodError => e
       raise NoMethodError.new("undefined method '#{name}' for #{self.class}")
     end
