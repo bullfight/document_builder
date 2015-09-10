@@ -1,55 +1,40 @@
 module DocumentBuilder
-  module Collection
-    module ClassMethods
-      def call(document, params = {})
-        root = @xpath || params[:xpath]
-        unless document.name == root
-          document = document.xpath(root)
-        end
+  class Collection
+    include Enumerable
+    attr_reader :name, :selector, :type, :node
 
-        document.nil? ? nil : self.coerce(document)
-      end
+    def initialize(name, selector:, type:)
+      @name = name
+      @selector = selector
+      @type = type
+    end
 
-      def collection(value, xpath, parser)
-        @collection = Attribute.new(value, xpath, parser)
-      end
+    def call(document)
+      return nil if document.nil?
+      @node = document.xpath(selector)
+      self
+    end
 
-      def inherited(subclass)
-        subclass.instance_variable_set(:@collection, @collection)
-        super
+    def each
+      @node.each do |element|
+        yield type.new(element)
       end
     end
 
-    def self.included(base)
-      base.extend(ClassMethods)
-      base.class_eval do
-        include Model
-        include Enumerable
-      end
-    end
-
-    def collection
-      self.class.instance_variable_get(:@collection)
-    end
-
-    def each(&block)
-      document.xpath(collection.xpath).each do |item|
-        block.call(
-          collection.call(item)
-        )
-      end
-    end
-
-    def data
-      lazy
+    def to_s(*args)
+      JSON.pretty_generate(to_hash)
     end
 
     def inspect
-      "#<#{self.class}:0x#{self.object_id.to_s(16)}> { data: #{data} } }"
+      "#<#{self.class}:0x#{self.object_id.to_s(16)}> Attributes: " + JSON.pretty_generate(to_hash)
+    end
+
+    def to_json(*args)
+      JSON.generate(to_hash)
     end
 
     def to_hash
-      { data: data }
+      entries.map(&:to_hash)
     end
   end
 end

@@ -1,46 +1,38 @@
 module Document
   class Category
     include DocumentBuilder::Model
-    xpath 'category'
-    attribute :domain, 'domain', DocumentBuilder::ElementAttribute
-    attribute :nicename, 'nicename', DocumentBuilder::ElementAttribute
-    attribute :body, nil, DocumentBuilder::ChildAttribute
+    tag :domain, selector: 'domain'
+    tag :nicename, selector: 'nicename'
+    property :body, selector: 'category'
   end
 
   class Postmeta
     include DocumentBuilder::Model
-    xpath 'postmeta'
-    attribute :key, "wp:meta_key"
-    attribute :value, "wp:meta_value", DocumentBuilder::IntegerAttribute
-  end
-
-  class PostmetaCollection
-    include DocumentBuilder::Collection
-    xpath "item"
-    collection :postmeta, "//wp:postmeta", Postmeta
+    property :key, selector: "wp:meta_key"
+    property :value, selector: "wp:meta_value", type: IntegerProperty
   end
 
   class Post
     include DocumentBuilder::Model
-    xpath "item"
-    attribute :title
-    attribute :link
-    attribute :pub_date, "pubDate", DocumentBuilder::UtcTimeAttribute
-    attribute :creator, "dc:creator"
-    attribute :content, "content:encoded"
-    attribute :excerpt, "excerpt:encoded"
-    attribute :id, "wp:post_id", DocumentBuilder::IntegerAttribute
-    attribute :post_date, 'wp:post_date', DocumentBuilder::TimeAttribute
-    attribute :post_date_gmt, 'wp:post_date_gmt', DocumentBuilder::UtcTimeAttribute
-    attribute :comment_status, "wp:comment_status"
-    attribute :ping_status, "wp:ping_status"
-    attribute :name, 'wp:post_name'
-    attribute :status, "wp:status"
-    attribute :parent, "wp:post_parent", DocumentBuilder::IntegerAttribute
-    attribute :menu_order, "wp:menu_order", DocumentBuilder::IntegerAttribute
-    attribute :type, "wp:post_type"
-    attribute :is_sticky, "wp:is_sticky", DocumentBuilder::IntegerAttribute
-    attribute :category, "category", Category
-    attribute :postmetas, 'item', PostmetaCollection
+    root "//item"
+    property :title, selector: "title"
+    property :link, selector: "link"
+    property :pub_date, selector: "pubDate", type: UtcTimeProperty
+    property :creator, selector: "dc:creator"
+    property :content, selector: "content:encoded"
+    property :excerpt, selector: "excerpt:encoded"
+    property :id, selector: "wp:post_id", type: IntegerProperty
+    property :post_date, selector: 'wp:post_date', type: TimeProperty
+    property :post_date_gmt, selector: 'wp:post_date_gmt', type: UtcTimeProperty
+    property :comment_status, selector: "wp:comment_status"
+    property :ping_status, selector: "wp:ping_status"
+    property :name, selector: 'wp:post_name'
+    property :status, selector: "wp:status"
+    property :parent, selector: "wp:post_parent", type: IntegerProperty
+    property :menu_order, selector: "wp:menu_order", type: IntegerProperty
+    property :type, selector: "wp:post_type"
+    property :is_sticky, selector: "wp:is_sticky", type: IntegerProperty
+    property :category, selector: "//category", type: Category
+    collection :postmetas, selector: '//wp:postmeta', type: Postmeta
   end
 end

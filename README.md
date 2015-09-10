@@ -27,97 +27,53 @@ Or install it yourself as:
 following example
 
 ```ruby
-module Document
-  class Category
-    include DocumentBuilder::Model
-    xpath 'category'
-    attribute :domain, 'domain', DocumentBuilder::ElementAttribute
-    attribute :nicename, 'nicename', DocumentBuilder::ElementAttribute
-    attribute :body, nil, DocumentBuilder::ChildAttribute
-  end
-
-  class Postmeta
-    include DocumentBuilder::Model
-    xpath 'postmeta'
-    attribute :key, "wp:meta_key"
-    attribute :value, "wp:meta_value", DocumentBuilder::IntegerAttribute
-  end
-
-  class PostmetaCollection
-    include DocumentBuilder::Collection
-    xpath "item"
-    collection :postmeta, "//wp:postmeta", Postmeta
-  end
-
-  class Post
-    include DocumentBuilder::Model
-    xpath "item"
-    attribute :title
-    attribute :link
-    attribute :pub_date, "pubDate", DocumentBuilder::TimeAttribute
-    attribute :creator, "dc:creator"
-    attribute :content, "content:encoded"
-    attribute :excerpt, "excerpt:encoded"
-    attribute :id, "wp:post_id", DocumentBuilder::IntegerAttribute
-    attribute :published_at, 'wp:post_date_gmt', DocumentBuilder::TimeAttribute
-    attribute :comment_status, "wp:comment_status"
-    attribute :ping_status, "wp:ping_status"
-    attribute :name, 'wp:post_name'
-    attribute :status, "wp:status"
-    attribute :parent, "wp:post_parent", DocumentBuilder::IntegerAttribute
-    attribute :menu_order, "wp:menu_order", DocumentBuilder::IntegerAttribute
-    attribute :type, "wp:post_type"
-    attribute :is_sticky, "wp:is_sticky", DocumentBuilder::IntegerAttribute
-    attribute :category, "category", Category
-    attribute :postmetas, 'item', PostmetaCollection
-  end
+class ListItem
+  include DocumentBuilder::Model
+  property :name, type: TextProperty
 end
 
-### Using Model Objects
+class SomeDocument
+  include DocumentBuilder::Model
+  root "//root"
+  collection :collection, selector: "//collection//inner-list-item", type: ListItem
+  collection :outer_collection, selector: "outer-list-item", type: ListItem
+  property :property, selector: "//property", type: TextProperty
+end
 ```
 
 ```ruby
-# Read an xml file
-url = "https://raw.githubusercontent.com/bullfight/wrxer/master/spec/fixtures/wrx.xml"
-uri = URI.parse(url)
+require 'document_builder'
+require 'nokogiri'
 
-uri.open do |file|
-  document = Nokogiri::XML(file.read).xpath('//channel').at_xpath('item')}
-end
+DOCUMENT = <<-XML
+  <root>
+    <collection>
+      <inner-list-item>Inner Item 1</inner-list-item>
+      <inner-list-item>Inner Item 2</inner-list-item>
+    </collection>
+    <outer-list-item>Outer Item 1</outer-list-item>
+    <outer-list-item>Outer Item 2</outer-list-item>
+    <property>Some Property</property>
+  </root>
+XML
 
-post = Document::Post.call(document)
+document = Nokogiri::XML(DOCUMENT)
+some_document = SomeDocument.new(document)
 
-=> #<Wrxer::Post:0x3fd4799693ac> Attributes: {
-  "title": "Welcome To Wrxer News.",
-  "link": "https://wrxernews.wordpress.com/2007/11/17/welcome-to-wrxer-news/",
-  "pub_date": "2007-11-17 21:30:51 +0000",
-  "creator": "wrxernews",
-  "content": "Welcome to <strong>Wrxer News</strong> - The most up-to-date and reliable source for Wrxer news.",
-  "excerpt": "Excerpt Text",
-  "id": 3,
-  "published_at": "2007-11-17 21:30:51 -0800",
-  "comment_status": "open",
-  "ping_status": "open",
-  "name": "welcome-to-wrxer-news",
-  "status": "publish",
-  "parent": 0,
-  "menu_order": 0,
-  "type": "post",
-  "is_sticky": 0,
-  "category": {
-    "domain": "category",
-    "nicename": "wrxer-news",
-    "body": "Wrxer News"
-  },
-  "postmetas": {
-    "data": "#<Enumerator::Lazy:0x007fa8f315a970>"
-  },
-  "comments": {
-    "data": "#<Enumerator::Lazy:0x007fa8f315a3f8>"
-  }
+=> #<SomeDocument:0x3fd4799693ac> Attributes: {
+  "collection": [
+    { "name": "Inner Item 1" },
+    { "name": "Inner Item 2" }
+  ],
+  "outer_collection": [
+    { "name": "Outer Item 1" },
+    { "name": "Outer Item 2" }
+  ],
+  "property": "Some Property"
 }
-post.title
-=> "Welcome To Wrxer News."
+
+some_document.property
+=> "Some Property"
 ```
 
 ## Contributing

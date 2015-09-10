@@ -45,6 +45,8 @@ describe Document::Post do
 
     it 'has a category' do
       expect(subject.category).to be_a Document::Category
+      expect(subject.category.domain).to eq "category"
+      expect(subject.category.body).to eq "Wrxer News"
     end
 
     it 'has is_sticky' do
@@ -53,6 +55,7 @@ describe Document::Post do
 
     it 'has postmetas' do
       expect(subject.postmetas.first).to be_a Document::Postmeta
+      expect(subject.postmetas.first.key).to_not eq nil
     end
 
     it 'does not have a not foo' do
@@ -61,7 +64,7 @@ describe Document::Post do
     end
   end
 
-  context "nil attribute case" do
+  context "nil property case" do
     let(:filename) { fixture('missing_fields.xml') }
     let(:document) { Nokogiri::XML(filename.read).xpath('//channel').at_xpath('item')}
     subject { described_class.call(document) }
@@ -85,7 +88,7 @@ describe Document::Post do
     subject { described_class.new(document) }
 
     it 'returns nil for category' do
-      expect(subject.category).to eq nil
+      expect(subject.category).to be_a Document::Category
     end
   end
 end

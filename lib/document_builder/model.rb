@@ -1,14 +1,35 @@
 module DocumentBuilder
   module Model
     module ClassMethods
-      def attribute(name, xpath = nil, coercion = TextAttribute)
-        @attributes ||= []
-        @attributes << Attribute.new(name, xpath || name.to_s, coercion)
+      def add_attribute(name, attribute)
+        @attributes ||= {}
+        @attributes[name.to_sym] = attribute
+      end
+
+      def property(name, selector: nil, type: nil)
+        add_attribute name, Property.new(name, selector: selector, type: type)
+      end
+
+      def tag(name, selector: nil, type: nil)
+        add_attribute name, Tag.new(name, selector: selector, type: type)
+      end
+
+      def collection(name, selector: nil, type: nil)
+        add_attribute name, Collection.new(name, selector: selector, type: type)
+      end
+
+      def root(selector)
+        @root = selector
       end
 
       def inherited(subclass)
         subclass.instance_variable_set(:@attributes, @attributes)
+        subclass.instance_variable_set(:@root, @root)
         super
+      end
+
+      def call(document)
+        self.new(document)
       end
     end
 
@@ -16,8 +37,6 @@ module DocumentBuilder
       base.extend(ClassMethods)
       base.class_eval do
         include Coercion
-
-        attr_reader :document
       end
     end
 
@@ -25,16 +44,40 @@ module DocumentBuilder
       @document = document
     end
 
+    def document
+      if root && @document.name != root
+        @document.at_xpath(root)
+      else
+        @document
+      end
+    end
+
+    def root
+      self.class.instance_variable_get(:@root)
+    end
+
     def attributes
       self.class.instance_variable_get(:@attributes)
     end
 
+    def get_attribute(name)
+      if respond_to?(name)
+        public_send(name)
+      else
+        attributes[name].call(document)
+      end
+    end
+
+    def add_attribute(name, attribute)
+      self.class.add_attribute(name, attribute)
+    end
+
     def [](key)
-      attributes.select { |item| item.name == key.to_sym}.first.call(document)
+      get_attribute(key)
     end
 
     def method_missing(name, *args)
-      attributes.select { |item| item.name == name }.first.call(document)
+      get_attribute(name)
     rescue NoMethodError => e
       raise NoMethodError.new("undefined method '#{name}' for #{self.class}")
     end
@@ -53,8 +96,8 @@ module DocumentBuilder
 
     def to_hash
       attributes.inject({}) do |acc, (key, value)|
-        value = key.call(document)
-        acc[key.name] = value.respond_to?(:to_hash) ? value.to_hash : value
+        obj = get_attribute(key)
+        acc[key] = obj.respond_to?(:to_hash) ? obj.to_hash : obj
         acc
       end
     end
