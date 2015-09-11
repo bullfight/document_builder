@@ -17,7 +17,7 @@ module DocumentBuilder
 
     def each
       @node.each do |element|
-        yield type.new(element)
+        yield type.call(element)
       end
     end
 
