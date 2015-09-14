@@ -1,9 +1,12 @@
 module DocumentBuilder
   module Model
     module ClassMethods
-      def add_attribute(name, attribute)
+      def attributes
         @attributes ||= {}
-        @attributes[name.to_sym] = attribute
+      end
+
+      def add_attribute(name, attribute)
+       attributes[name.to_sym] = attribute
       end
 
       def property(name, selector: nil, type: nil)
@@ -51,7 +54,7 @@ module DocumentBuilder
     end
 
     def attributes
-      self.class.instance_variable_get(:@attributes)
+      self.class.attributes
     end
 
     def get_attribute(name)
