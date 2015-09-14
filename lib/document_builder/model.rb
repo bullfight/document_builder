@@ -22,12 +22,6 @@ module DocumentBuilder
         @root = selector
       end
 
-      def inherited(subclass)
-        subclass.instance_variable_set(:@attributes, @attributes)
-        subclass.instance_variable_set(:@root, @root)
-        super
-      end
-
       def call(document)
         self.new(document)
       end
